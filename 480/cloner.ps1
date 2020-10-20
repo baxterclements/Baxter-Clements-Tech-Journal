@@ -1,6 +1,7 @@
 Write-Host "Cloner Start"
-$server = read-host -prompt "What is the Vcenter hostname"
-Connect-VIServer -server $server
+$myconfig = Get-Content -Raw -Path "cloner.json" | ConvertFrom-Json
+Connect-VIServer -server $myconfig.vcenter_server
+
 $vms = Get-VM | select Name | Out-String
 Write-Host " "
 Write-Host "VM Names"
@@ -20,36 +21,10 @@ $clone_type = $clone_type.ToLower()
 if ($clone_type -eq "f") {
 
     $snapshot = Get-Snapshot -vm $basevm -Name "Base"
-    $select = vmhost | select name | Out-String
-    Write-Host " "
-    Write-Host "VM Hosts"
-    foreach ($item in $select) {
-        $item = $item.substring(11)
-        Write-Host "[0]$item"
-    }
+
+    $vmhost = Get-VMHost -Name $myconfig.esxi_server
     
-    $select = Read-Host -Prompt "Where do you want to run this"
-    if ($select -eq "0") {
-        $vmhost = Get-VMHost -Name super3.cyber.local
-    } else {
-        Write-Host "ERROR"
-        exit
-    }
-    
-    $select = datastore | select name | Out-String
-    Write-Host " "
-    Write-Host "Datastores"
-    $select
-    
-    $select = Read-Host -Prompt "What datastore do you want to use"
-    if ($select -eq "datastore1-super3") {
-        $dstore = Get-Datastore -name datastore1-super3
-    } elseif ($select -eq "datastore2-super3") {
-        $dstore = Get-Datastore -name datastore2-super3
-    } else {
-        Write-Host "ERROR"
-        exit
-    }
+    $dstore = Get-Datastore -name $myconfig.preferred_datastore
 
     $link = ".linked"
     $name = Read-Host -Prompt "What would you like to call your vm"
@@ -61,81 +36,42 @@ if ($clone_type -eq "f") {
 
     remove-vm -VM $linkname -Confirm -DeletePermanently
 
+    $newnet = $myconfig.preferred_network
+
+    get-vm $name | Get-NetworkAdapter | Set-NetworkAdapter -NetworkName $newnet -Confirm:$false
+
 } elseif ($clone_type -eq "r") {
     
-    $select = vmhost | select name | Out-String
-    Write-Host " "
-    Write-Host "VM Hosts"
-    foreach ($item in $select) {
-        $item = $item.substring(11)
-        Write-Host "[0]$item"
-    }
+    $vmhost = Get-VMHost -Name $myconfig.esxi_server
     
-    $select = Read-Host -Prompt "Where do you want to run this"
-    if ($select -eq "0") {
-        $vmhost = Get-VMHost -Name super3.cyber.local
-    } else {
-        Write-Host "ERROR"
-        exit
-    }
-    
-    $select = datastore | select name | Out-String
-    Write-Host " "
-    Write-Host "Datastores"
-    $select
-    
-    $select = Read-Host -Prompt "What datastore do you want to use"
-    if ($select -eq "datastore1-super3") {
-        $dstore = Get-Datastore -name datastore1-super3
-    } elseif ($select -eq "datastore2-super3") {
-        $dstore = Get-Datastore -name datastore2-super3
-    } else {
-        Write-Host "ERROR"
-        exit
-    }
+    $dstore = Get-Datastore -name $myconfig.preferred_datastore
+
     $name = Read-Host -Prompt "What would you like to call your vm"
 
     $newvm = new-vm -name $name -vm $basevm -VMHost $vmhost -Datastore $dstore
 
+    $newnet = $myconfig.preferred_network
+
+    get-vm $name | Get-NetworkAdapter | Set-NetworkAdapter -NetworkName $newnet -Confirm:$false
+
 } elseif ($clone_type -eq "l") {
 
     $snapshot = Get-Snapshot -vm $basevm -Name "Base"
-    $select = vmhost | select name | Out-String
-    Write-Host " "
-    Write-Host "VM Hosts"
-    foreach ($item in $select) {
-        $item = $item.substring(11)
-        Write-Host "[0]$item"
-    }
     
-    $select = Read-Host -Prompt "Where do you want to run this"
-    if ($select -eq "0") {
-        $vmhost = Get-VMHost -Name super3.cyber.local
-    } else {
-        Write-Host "ERROR"
-        exit
-    }
+    $vmhost = Get-VMHost -Name $myconfig.esxi_server
     
-    $select = datastore | select name | Out-String
-    Write-Host " "
-    Write-Host "Datastores"
-    $select
-    
-    $select = Read-Host -Prompt "What datastore do you want to use"
-    if ($select -eq "datastore1-super3") {
-        $dstore = Get-Datastore -name datastore1-super3
-    } elseif ($select -eq "datastore2-super3") {
-        $dstore = Get-Datastore -name datastore2-super3
-    } else {
-        Write-Host "ERROR"
-        exit
-    }
+    $dstore = Get-Datastore -name $myconfig.preferred_datastore
 
     $link = ".linked"
     $name = Read-Host -Prompt "What would you like to call your vm"
     $linkname = $name+$link
 
     $newvm = New-Vm -name "$linkname" -vm $basevm -LinkedClone -ReferenceSnapshot $snapshot -VMHost $vmhost -Datastore $dstore
+
+    $newnet = $myconfig.preferred_network
+
+    get-vm $linkname | Get-NetworkAdapter | Set-NetworkAdapter -NetworkName $newnet -Confirm:$false
+
 } else {
     Write-Host "error"
     exit
