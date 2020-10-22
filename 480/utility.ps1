@@ -10,4 +10,25 @@ function Create_VSwitch {
     
 }
 
-Create_VSwitch 
+function setNetwork {
+    param ([string] $vmname, [int] $numInterface, [string] $preferredNetwork)
+    
+    $vm = get-vm -name $vmname
+
+    $interfaces = $vm | Get-NetworkAdapter
+
+    $interfaces[$numInterface] | Set-NetworkAdapter -NetworkName $preferredNetwork
+}
+
+function getIP {
+    param ($vmName)
+    $vm = get-vm -name $vmname
+    foreach ($item in $vm) {
+
+        Write-host $item.Guest.IPAddress[0] hostname=$item
+    }
+
+}
+
+Create_VSwitch
+
