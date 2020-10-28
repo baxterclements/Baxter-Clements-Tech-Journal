@@ -1,0 +1,28 @@
+---
+
+- name: xubuntu-networking
+  hosts: xubuntu_server
+  tasks:
+  - name: set the hostname
+    hostname:
+      name: "{{hostname}}"
+    become: yes
+
+  - name: add host to hosts file
+    lineinfile:
+      path: /etc/hosts
+      line: '127.0.1.1 {{hostname}}'
+    become: yes
+
+  - name: push over the networking script
+    template:
+      src: files/ubuntu/ifcfg-script-ubuntu.sh
+      dest: '/usr/local/bin'
+      mode: 0777
+      owner: root
+      group: root
+      force: yes
+    become: yes
+  - name: run the script
+    become: yes
+    shell: nohup /usr/local/bin/ifcfg-script-ubuntu.sh &>/tmp/out.txt &

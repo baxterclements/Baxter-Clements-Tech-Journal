@@ -1,0 +1,30 @@
+---
+
+- name: push key
+  hosts: xubuntu_server
+  tasks:
+    - name: create the .ssh ddirectory
+      file:
+        path: /home/deployer/.ssh
+        state: directory
+        mode: 0700
+    - name: create authorized_keys file
+      file:
+        path: /home/deployer/.ssh/authorized_keys
+        state: touch
+        mode: 0644
+    - name: copy over key block and append to authorized_keys
+      blockinfile:
+        dest: /home/deployer/.ssh/authorized_keys
+        block: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCr42wpNhpYDc1LoxNQLj04BCLCw4zNBu7NGET36MXjc9PWulvm+98e6EuboeNQad0iLQZoREmRQfLZ5GvpI+cfovAmEmpifGMelF6xhNxqqGsw04p6grIVcNxPhdBWtD3eVgdhpgJRp1Fz08gX0YdD2NZc+7NIEG6pV1nwT2SGs71LEcCkU5qFSg2TjLuNwVzncbHnQ8xonhua0TXFAo5V85Q2CMxp1JoOTH57JQ5URnJA7nGf/7RMKPUqyqgXIcZG2TupoIyk6ned8iAOfryoYh0YOtHVqDXFXcBo09SMLwA3EUH4y4wV/Cyw2o6YSn3nUyPJZsrs28lmzrECN2R+z/o38Bz5nkgqU3QkThwCiBJ9e0iRgqpakjzSxs+KZG9b9TCflXz9Vm+R+w8eQyZFxTVtw5/0U6L2j28II7qfSbuT1qvxrihfJT88CcZSqe+gn2hTG0c4xFLjVuco3Nkiwu3eTZBZ9+6ozeV8H6RCCDXWVfSQa2zbNiRyqTfCk9iBpCfLFZqUxMqe0soGpb4wcpOJJd+ZgVOGJTOeTtphgVB8FHNu4ZDNScMDPtYOPMT0GPfL/F/98xvUF6mW+23J29u6AF2dQTfgLwZpkq4wkzImV/XUaxES8KABMItYS5oklfX66s6cRcmQeHMH/3DeoTUeQjIjlY0RGdpY9AzAKQ== baxter@ubuntu
+    - name: create sudoers dropin file for 480
+      file:
+        path: /etc/sudoers.d/480
+        state: touch
+        mode: 0440
+      become: yes
+    - name: create deployer entry in /etc/sudoers.d/480
+      blockinfile: 
+        dest: /etc/sudoers.d/480
+        block: "deployer ALL=(ALL) NOPASSWD: ALL"
+      become: yes

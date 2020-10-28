@@ -62,15 +62,14 @@ if ($clone_type -eq "f") {
     
     $dstore = Get-Datastore -name $myconfig.preferred_datastore
 
-    $link = ".linked"
+    
     $name = Read-Host -Prompt "What would you like to call your vm"
-    $linkname = $name+$link
 
-    $newvm = New-Vm -name "$linkname" -vm $basevm -LinkedClone -ReferenceSnapshot $snapshot -VMHost $vmhost -Datastore $dstore
+    $newvm = New-Vm -name "$name" -vm $basevm -LinkedClone -ReferenceSnapshot $snapshot -VMHost $vmhost -Datastore $dstore
 
     $newnet = $myconfig.preferred_network
 
-    get-vm $linkname | Get-NetworkAdapter | Set-NetworkAdapter -NetworkName $newnet -Confirm:$false
+    get-vm $name | Get-NetworkAdapter | Set-NetworkAdapter -NetworkName $newnet -Confirm:$false
 
 } else {
     Write-Host "error"

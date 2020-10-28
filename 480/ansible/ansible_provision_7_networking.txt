@@ -1,0 +1,32 @@
+[vyos]
+10.0.17.102 hostname=fw-blue3 wan_ip=10.0.17.200 lan_ip=10.0.5.2 lan=10.0.5.0/24 name_server=10.0.17.4 gateway=10.0.17.2
+
+[centos_server]
+10.0.5.77 hostname=centos-3 lan_ip=10.0.5.13
+10.0.5.75 hostname=centos-2 lan_ip=10.0.5.12
+10.0.5.76 hostname=centos-1 lan_ip=10.0.5.11
+
+[xubuntu_server]
+10.0.5.79 hostname=xubuntu-1 lan_ip=10.0.5.14
+10.0.5.80 hostname=xubuntu-2 lan_ip=10.0.5.15
+
+[xubuntu_server:vars]
+device=ens160
+
+[centos_server:vars]
+device=ens192
+[linux_server:children]
+centos_server
+xubuntu_server
+
+[linux_server:vars]
+gateway=10.0.5.2
+prefix=24
+name_server=10.0.5.2
+domain=baxter.local
+ansible_user=baxter
+
+[vyos:vars]
+ansible_python_interperter="/usr/bin/python3"
+#ansible_connection=network_cli
+#ansible_network_os=vyos
