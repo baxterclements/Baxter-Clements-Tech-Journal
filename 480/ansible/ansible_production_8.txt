@@ -41,6 +41,7 @@ domain_controller
 [server:vars]
 gateway=10.0.5.2
 prefix=24
+netmask=255.255.255.0
 name_server=10.0.5.2
 domain=blue3.local
 ansible_user=deployer

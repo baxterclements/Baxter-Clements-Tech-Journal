@@ -1,0 +1,14 @@
+---
+  - name: create OU
+    hosts: domain_controller
+    gather_facts: no
+    tasks: 
+      - name: Create OU
+        win_shell: |
+          powershell
+          New-ADOrganizationalUnit -Name "blue3" -Path "DC=blue3,DC=local"
+          New-ADOrganizationalUnit -Name "Accounts" -Path "OU=blue3,DC=blue3,DC=local"
+          New-ADOrganizationalUnit -Name "Groups" -Path "OU=Accounts,OU=blue3,DC=blue3,DC=local"
+          New-ADOrganizationalUnit -Name "Computers" -Path "OU=blue3,DC=blue3,DC=local"
+          New-ADOrganizationalUnit -Name "Servers" -Path "OU=Computers,OU=blue3,DC=blue3,DC=local"
+          New-ADOrganizationalUnit -Name "Workstations" -Path "OU=Computers,OU=blue3,DC=blue3,DC=local"
