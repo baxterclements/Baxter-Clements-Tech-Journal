@@ -1,0 +1,37 @@
+[vyos]
+10.0.17.200
+
+[centos_server]
+10.0.5.13 hostname=centos-3
+10.0.5.12 hostname=centos-2
+10.0.5.11 hostname=centos-1
+
+[xubuntu_server]
+10.0.5.14 hostname=xubuntu-1
+10.0.5.15 hostname=xubuntu-2
+
+[xubuntu_server:vars]
+device=ens160
+
+[centos_server:vars]
+device=ens192
+
+[linux_server:children]
+centos_server
+xubuntu_server
+
+[linux_server:vars]
+gateway=10.0.5.2
+prefix=24
+name_server=10.0.5.2
+domain=baxter.local
+ansible_user=baxter
+
+[vyos:vars]
+ansible_user=vyos
+ansible_python_interperter="/usr/bin/python3"
+ansible_connection=network_cli
+ansible_network_os=vyos
+shared_network_name="BLUE3"
+dhcp_subnet="10.0.5.0/24"
+static_map_name="dc-blue3"

@@ -30,5 +30,8 @@ function getIP {
 
 }
 
+function getMAC {
+    param ($vmName)
+    Get-VM $vmName | Get-NetworkAdapter | select MacAddress
+}
 
-Create_VSwitch
