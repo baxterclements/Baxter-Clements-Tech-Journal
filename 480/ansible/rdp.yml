@@ -1,0 +1,10 @@
+---
+- name: Setup RDP
+  hosts: windows
+  gather_facts: no
+  tasks: 
+  - name: Set up rdp and allow through firewall
+    win_shell: |
+      powershell
+      Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -value 0
+      Enable-NetFirewallRule -DisplayGroup "Remote Desktop"

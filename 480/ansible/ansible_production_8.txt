@@ -17,6 +17,8 @@ device=ens192
 device=ens160
 
 [windows_workstation]
+10.0.5.82 hostname=workstation-1
+10.0.5.81 hostname=workstation-2
 
 [windows:children]
 windows_server
@@ -32,7 +34,11 @@ windows_server
 xubuntu_server
 
 [windows_server:children]
-domain_controller
+windows_gui
+windows_workstation
+
+[windows_gui]
+10.0.5.6 hostname=vanhalen
 
 [domain_controller]
 10.0.5.5 hostname=dc-blue3
@@ -53,4 +59,4 @@ ansible_connection=network_cli
 ansible_network_os=vyos
 shared_network_name="BLUE3"
 dhcp_subnet="10.0.5.0/24"
-static_map_name="dc-blue3"
+static_map_name="vanhalen"

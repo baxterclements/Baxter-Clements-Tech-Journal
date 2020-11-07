@@ -1,0 +1,10 @@
+---
+- name: change power settings
+  hosts: windows_workstation
+  gather_facts: no
+
+  tasks:
+  - name: Change power plan to high performance
+    win_power_plan:
+      name: high performance
+

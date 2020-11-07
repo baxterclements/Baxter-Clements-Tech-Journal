@@ -1,0 +1,28 @@
+---
+- name: Join Domain
+  hosts: windows_workstation
+  gather_facts: no
+  vars_prompt:
+  - name: adminpassword
+    prompt: "What is the domain admin password?"
+    private: yes
+
+  tasks: 
+  - name: change DNS
+    win_shell: |
+      powershell
+      Set-DnsClientServerAddress -InterfaceAlias Ethernet0 -ServerAddresses ("10.0.5.5")
+    
+
+  - name: Joining Domain
+    win_domain_membership:
+      dns_domain_name: blue3
+      hostname: "{{ hostname }}"
+      domain_admin_user: administrator@blue3
+      domain_admin_password: "{{ adminpassword }}"
+      domain_ou_path: "OU=Workstations,OU=Computers,OU=blue3,DC=blue3,DC=local"
+      state: domain
+    register: domain_state  
+
+  - win_reboot:
+    when: domain_state.reboot_required
