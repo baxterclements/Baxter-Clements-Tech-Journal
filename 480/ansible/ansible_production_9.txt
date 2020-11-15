@@ -23,6 +23,7 @@ device=ens160
 [windows:children]
 windows_server
 windows_workstation
+domain_controller
 
 [windows:vars]
 ansible_shell_type=cmd
@@ -36,6 +37,7 @@ xubuntu_server
 [windows_server:children]
 windows_gui
 windows_workstation
+domain_controller
 
 [windows_gui]
 10.0.5.6 hostname=vanhalen
@@ -50,7 +52,7 @@ prefix=24
 netmask=255.255.255.0
 name_server=10.0.5.2
 domain=blue3.local
-ansible_user=administrator
+ansible_user=Administrator@blue3
 
 [vyos:vars]
 ansible_user=vyos

@@ -1,0 +1,19 @@
+---
+
+- name: parsecsv
+  hosts: domain_controller
+  vars_prompt:
+  - name: path
+    prompt: Enter the path you your csv file
+    private: no
+  tasks:
+  - name: read csv
+    read_csv:
+      path: "{{ path }}"
+    register: item
+    delegate_to: localhost
+
+  - name: an ansible loop
+    debug:
+      msg: "{{ item.username }} - {{ item.group }}"
+    with_items: "{{ item.list }}"    

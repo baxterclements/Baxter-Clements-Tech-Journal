@@ -1,0 +1,64 @@
+---
+#
+- name: create groups and accounts
+  hosts: domain_controller
+  gather_facts: no
+  vars_prompt:
+  - name: oupath
+    prompt: Enter the path you your ou csv file
+    private: no
+  - name: userspath
+    prompt: Enter the path you your users file
+    private: no
+  - name: admin
+    prompt: Enter the new domain admin
+    private: no
+  - name: adminpass
+    prompt: Enter the domain admin password
+    private: yes
+
+  tasks:
+  - name: read csv
+    read_csv:
+      path: "{{ oupath }}"
+    register: item
+    delegate_to: localhost
+
+  - name: create ous
+    win_domain_group:
+      name: "{{ item.ou }}"
+      scope: global
+      path: OU=Groups,OU=Accounts,OU=blue3,DC=blue3,DC=local
+    with_items: "{{ item.list }}" 
+
+  - name: create admin
+    win_domain_user:
+      name: "{{ admin }}"
+      password: "{{ adminpass }}"
+      path: OU=Accounts,OU=blue3,DC=blue3,DC=local
+      groups: 
+        - "Domain Admins"
+
+  - name: read csv
+    read_csv:
+      path: "{{ userspath }}"
+    register: item
+    delegate_to: localhost  
+
+  - name: create users
+    win_domain_user:
+      name: "{{ item.username }}"
+      password: "{{ item.password }}"
+      groups: 
+        - "{{ item.group }}"
+    with_items: "{{ item.list }}"
+
+  
+
+
+
+
+
+
+
+        
