@@ -1,0 +1,10 @@
+server {
+  listen 80;
+  listen [::]:80;
+  server_name ec2-3-238-28-94.compute-1.amazonaws.com;
+  root /var/www/ec2-3-238-28-94.compute-1.amazonaws.com;
+  location / {
+    try_files $uri $uri/ =404;
+  }
+}
+

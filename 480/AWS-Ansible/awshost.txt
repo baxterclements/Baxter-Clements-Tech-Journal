@@ -1,0 +1,2 @@
+[aws]
+ubuntu@ec2-3-89-252-89.compute-1.amazonaws.com ansible_user=ubuntu

@@ -1,0 +1,35 @@
+- hosts: aws
+  become: yes
+  tasks:
+  - name: "apt-get update"
+    apt:
+      update_cache: yes
+      cache_valid_time: 3600
+
+  - name: "install nginx"
+    apt:
+      name: ['nginx']
+      state: latest
+
+  - name: "create www directory"
+    file:
+      path: /var/www/ec2-3-238-28-94.compute-1.amazonaws.com
+      state: directory
+      mode: '0775'
+      owner: "ubuntu"
+      group: "ubuntu"
+
+  - name: copy nginx site.conf
+    template:
+      src: site.conf.j2
+      dest: /etc/nginx/sites-enabled/ec2-3-238-28-94.compute-1.amazonaws.com
+      owner: root
+      group: root
+      mode: '0644'
+    notify: restart nginx
+
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
